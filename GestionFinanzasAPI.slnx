@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="GestionFinanzas.Data/GestionFinanzas.Data.csproj" />
+  <Project Path="GestionFinanzas.Models/GestionFinanzas.Models.csproj" />
+  <Project Path="GestionFinanzas.Services/GestionFinanzas.Services.csproj" />
+  <Project Path="GestionFinanzasAPI/GestionFinanzasAPI.csproj" />
+</Solution>
