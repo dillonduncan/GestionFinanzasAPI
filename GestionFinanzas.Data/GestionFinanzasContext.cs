@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace GestionFinanzas.Data;
 
@@ -28,6 +26,7 @@ public partial class GestionFinanzasContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<Categoria>(entity =>
         {
             entity.HasKey(e => e.IdCategoria);
@@ -44,6 +43,7 @@ public partial class GestionFinanzasContext : DbContext
                 .HasForeignKey(d => d.IdUsuario)
                 .HasConstraintName("FK_Categorias_Usuarios");
         });
+        modelBuilder.Entity<Categoria>().HasQueryFilter(c => c.EstadoActivoCategoria == true);
 
         modelBuilder.Entity<Meta>(entity =>
         {
@@ -69,6 +69,7 @@ public partial class GestionFinanzasContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Metas_Usuarios");
         });
+        modelBuilder.Entity<Meta>().HasQueryFilter(m => m.EstadoActivoMeta == true);
 
         modelBuilder.Entity<Transaccione>(entity =>
         {
@@ -103,6 +104,7 @@ public partial class GestionFinanzasContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Transacciones_Usuarios");
         });
+        modelBuilder.Entity<Transaccione>().HasQueryFilter(t => t.EstadoActivoTransaccion == true);
 
         modelBuilder.Entity<Usuario>(entity =>
         {
@@ -131,6 +133,7 @@ public partial class GestionFinanzasContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("numero_identificacion");
         });
+        modelBuilder.Entity<Usuario>().HasQueryFilter(u => u.EstadoActivoUsuario == true);
 
         OnModelCreatingPartial(modelBuilder);
     }
