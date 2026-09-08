@@ -46,9 +46,9 @@ namespace GestionFinanzas.Services.Implementactions
             return transaccione;
         }
 
-        public async Task<bool> Delete(int idTransaccion)
+        public async Task<bool> Delete(int idTransaccion, int idUsuario)
         {
-            var transaccion = await _context.Transacciones.FindAsync(idTransaccion);
+            var transaccion = await _context.Transacciones.FirstOrDefaultAsync(t => t.IdTransaccion == idTransaccion && t.IdUsuario == idUsuario);
             if (transaccion == null) return false;
             transaccion.EstadoActivoTransaccion = false;
             await _context.SaveChangesAsync();

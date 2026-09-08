@@ -36,9 +36,9 @@ namespace GestionFinanzas.Services.Implementactions
             return meta;
         }
 
-        public async Task<bool> Delete(int idMeta)
+        public async Task<bool> Delete(int idMeta, int idUsuario)
         {
-            var meta = await _context.Metas.FindAsync(idMeta);
+            var meta = await _context.Metas.FirstOrDefaultAsync(m => m.IdMeta == idMeta && m.IdUsuario == idUsuario);
             if (meta == null) return false;
             meta.EstadoActivoMeta = false;
             await _context.SaveChangesAsync();

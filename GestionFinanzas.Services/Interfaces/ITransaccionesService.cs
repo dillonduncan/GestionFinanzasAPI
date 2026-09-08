@@ -9,6 +9,6 @@ namespace GestionFinanzas.Services.Interfaces
         Task<Transaccione> GetById(int id, int idUsuario);
         Task<Transaccione> Insert(Transaccione transaccion);
         Task<Transaccione> Update(Transaccione transaccione);
-        Task<bool> Delete(int idTransaccion);
+        Task<bool> Delete(int idTransaccion, int idUsuario);
     }
 }
