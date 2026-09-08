@@ -37,5 +37,26 @@ namespace GestionFinanzasAPI.Controllers
 
             return CreatedAtAction(nameof(GetAll), new { idUsuario = nuevaCategoria.IdUsuario }, nuevaCategoria);
         }
+
+        [HttpPut]
+        public async Task<IActionResult> Update([FromBody] Categoria categoria)
+        {
+            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
+            var catActualizada = await _categoriaService.Update(categoria);
+            return Ok(catActualizada);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int idCategoria, int idUsuario)
+        {
+            var catEliminada = await _categoriaService.Delete(idUsuario, idCategoria);
+
+            if (!catEliminada)
+            {
+                return NotFound(new { mensajke = "La categoria no existe o no tienes permisos para eliminarla" });
+            }
+            return NoContent();
+        }
     }
 }
