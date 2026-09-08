@@ -25,4 +25,8 @@
     <ProjectReference Include="..\GestionFinanzas.Services\GestionFinanzas.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
+
 </Project>
