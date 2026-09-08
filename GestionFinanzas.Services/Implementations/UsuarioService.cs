@@ -2,7 +2,7 @@
 using GestionFinanzas.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace GestionFinanzas.Services.Implementactions
+namespace GestionFinanzas.Services.Implementations
 {
     public class UsuarioService : IUsuarioService
     {

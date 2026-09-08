@@ -145,7 +145,7 @@ public partial class Categoria
 {
     public int IdCategoria { get; set; }
     public bool EstadoActivoCategoria { get; set; }
-    public int IdUsuario { get; set; }
+    public int? IdUsuario { get; set; }
     public string NombreCategoria { get; set; } = null!;
     public virtual Usuario? IdUsuarioNavigation { get; set; }
     public virtual ICollection<Transaccione> Transacciones { get; set; } = new HashSet<Transaccione>();
