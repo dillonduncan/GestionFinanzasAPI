@@ -17,9 +17,9 @@ namespace GestionFinanzas.Services.Implementations
             return await _context.Metas.Where(m => m.IdUsuario == idUsuario).ToListAsync();
         }
 
-        public async Task<Meta> GetById(int id, int idUsuario)
+        public async Task<Meta> GetById(int idMeta, int idUsuario)
         {
-            return await _context.Metas.FirstOrDefaultAsync(m => m.IdMeta == id && m.IdUsuario == idUsuario);
+            return await _context.Metas.FirstOrDefaultAsync(m => m.IdMeta == idMeta && m.IdUsuario == idUsuario);
         }
 
         public async Task<Meta> Insert(Meta meta)
