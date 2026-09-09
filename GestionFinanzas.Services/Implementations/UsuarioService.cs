@@ -44,6 +44,7 @@ namespace GestionFinanzas.Services.Implementations
 
         public async Task<Usuario> Insert(Usuario usuario)
         {
+            usuario.ContraseñaUsuario = BCrypt.Net.BCrypt.HashPassword(usuario.ContraseñaUsuario);
             await _context.Usuarios.AddAsync(usuario);
             await _context.SaveChangesAsync();
             return usuario;
@@ -51,7 +52,20 @@ namespace GestionFinanzas.Services.Implementations
 
         public async Task<Usuario> Update(Usuario usuario)
         {
-            _context.Usuarios.Update(usuario);
+            var usuarioExiste = await _context.Usuarios.FindAsync(usuario.IdUsuario);
+            if (usuarioExiste == null) return null;
+
+            if (!string.IsNullOrEmpty(usuario.ContraseñaUsuario))
+            {
+                usuarioExiste.ContraseñaUsuario = BCrypt.Net.BCrypt.HashPassword(usuario.ContraseñaUsuario);
+            }
+
+            usuarioExiste.NumeroIdentificacion = usuario.NumeroIdentificacion;
+            usuarioExiste.NombreUsuario = usuario.NombreUsuario;
+            usuarioExiste.ApellidoUsuario = usuario.ApellidoUsuario;
+            usuarioExiste.CorreoUsuario = usuario.CorreoUsuario;
+
+            _context.Usuarios.Update(usuarioExiste);
             await _context.SaveChangesAsync();
             return usuario;
         }
