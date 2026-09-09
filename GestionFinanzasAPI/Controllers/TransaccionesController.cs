@@ -6,7 +6,7 @@ namespace GestionFinanzasAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class TransaccionesController : Controller
+    public class TransaccionesController : ControllerBase
     {
         private readonly ITransaccionesService _transaccionesService;
         public TransaccionesController(ITransaccionesService transaccionesService)
