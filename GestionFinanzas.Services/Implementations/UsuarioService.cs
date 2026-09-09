@@ -67,7 +67,7 @@ namespace GestionFinanzas.Services.Implementations
 
             _context.Usuarios.Update(usuarioExiste);
             await _context.SaveChangesAsync();
-            return usuario;
+            return usuarioExiste;
         }
 
         public async Task<bool> Delete(int idUsuario)
