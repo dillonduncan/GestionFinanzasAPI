@@ -13,6 +13,7 @@ namespace GestionFinanzasAPI.DTOs.Requests
         [Required(ErrorMessage = "El apellido es obligatorio.")]
         public string ApellidoUsuario { get; set; }
 
+        [Required(ErrorMessage = "El correo es obligatorio")]
         [Required, EmailAddress]
         public string CorreoUsuario { get; set; }
 

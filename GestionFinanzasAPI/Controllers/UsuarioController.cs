@@ -71,15 +71,29 @@ namespace GestionFinanzasAPI.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody] usuario usuario)
+        public async Task<IActionResult> Update(int idUsuario, [FromBody] UsuarioUpdateDTO usuarioDTO)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var usuarioActualizado = await _usuarioService.Update(usuario);
-            return Ok(usuarioActualizado);
+            var usuarioActualizar = new Usuario
+            {
+                IdUsuario = idUsuario,
+                NumeroIdentificacion = usuarioDTO.NumeroIdentificacion,
+                NombreUsuario = usuarioDTO.NombreUsuario,
+                ApellidoUsuario = usuarioDTO.ApellidoUsuario,
+                CorreoUsuario = usuarioDTO.CorreoUsuario,
+                ContraseñaUsuario = usuarioDTO.ContraseñaUsuario
+            };
+
+            var usuarioActualizado = await _usuarioService.Update(usuarioActualizar);
+            if (usuarioActualizado == null)
+            {
+                return NotFound(new { mensaje = $"El usuario con ID {idUsuario} no existe." });
+            }
+            return Ok(MapearUsuarioResponseDTO(usuarioActualizado));
         }
 
         [HttpDelete("{idUsuario}")]
