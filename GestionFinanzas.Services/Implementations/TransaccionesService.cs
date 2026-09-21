@@ -15,21 +15,21 @@ namespace GestionFinanzas.Services.Implementations
         public async Task<IEnumerable<Transaccione>> GetAll(int idUsuario)
         {
             return await _context.Transacciones
-                .Where(t => t.IdUsuario == idUsuario)
+                .Where(t => t.IdUsuario == idUsuario && t.EstadoActivoTransaccion == true)
                 .ToListAsync();
         }
 
         public async Task<IEnumerable<Transaccione>> GetForCategoria(int idUsuario, int idCategoria)
         {
             return await _context.Transacciones
-                .Where(t => t.IdUsuario == idUsuario && t.IdCategoria == idCategoria)
+                .Where(t => t.IdUsuario == idUsuario && t.IdCategoria == idCategoria && t.EstadoActivoTransaccion == true)
                 .ToListAsync();
         }
 
         public async Task<Transaccione> GetById(int id, int idUsuario)
         {
             return await _context.Transacciones
-                .FirstOrDefaultAsync(t => t.IdTransaccion == id && t.IdUsuario == idUsuario);
+                .FirstOrDefaultAsync(t => t.IdTransaccion == id && t.IdUsuario == idUsuario && t.EstadoActivoTransaccion == true);
         }
 
         public async Task<Transaccione> Insert(Transaccione transaccion)
