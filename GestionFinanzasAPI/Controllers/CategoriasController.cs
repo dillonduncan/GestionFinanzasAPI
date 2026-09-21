@@ -1,5 +1,7 @@
 ﻿using GestionFinanzas.Data;
 using GestionFinanzas.Services.Interfaces;
+using GestionFinanzasAPI.DTOs.Requests;
+using GestionFinanzasAPI.DTOs.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionFinanzasAPI.Controllers
@@ -27,24 +29,37 @@ namespace GestionFinanzasAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Categoria categoria)
+        public async Task<IActionResult> Create([FromBody] CategoriaCreateDTO categoriaDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var nuevaCategoria = await _categoriaService.Insert(categoria);
 
-            return CreatedAtAction(nameof(GetAll), new { idUsuario = nuevaCategoria.IdUsuario }, nuevaCategoria);
+            var nuevaCategoria = new Categoria
+            {
+                NombreCategoria = categoriaDto.NombreCategoria,
+                EstadoActivoCategoria = true
+            };
+
+            var categoriaCreada = await _categoriaService.Insert(nuevaCategoria);
+            var respuestaDto = MapearACategoriaResponseDTO(categoriaCreada);
+
+            return CreatedAtAction(nameof(GetAll), new { idUsuario = nuevaCategoria.IdUsuario }, respuestaDto);
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody] Categoria categoria)
+        public async Task<IActionResult> Update(int idCategoria, [FromBody] CategoriaUpdateDTO categoriaDto)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
 
-            var catActualizada = await _categoriaService.Update(categoria);
-            return Ok(catActualizada);
+            var categoriaActualizar = new Categoria
+            {
+                NombreCategoria = categoriaDto.NombreCategoria
+            };
+
+            var catActualizada = await _categoriaService.Update(categoriaActualizar);
+            return Ok(MapearACategoriaResponseDTO(catActualizada));
         }
 
         [HttpDelete]
@@ -57,6 +72,14 @@ namespace GestionFinanzasAPI.Controllers
                 return NotFound(new { mensajke = "La categoria no existe o no tienes permisos para eliminarla" });
             }
             return NoContent();
+        }
+        private CategoriaResponseDTO MapearACategoriaResponseDTO(Categoria categoria)
+        {
+            return new CategoriaResponseDTO
+            {
+                IdCategoria = categoria.IdCategoria,
+                NombreCategoria = categoria.NombreCategoria
+            };
         }
     }
 }

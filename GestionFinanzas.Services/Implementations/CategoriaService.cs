@@ -14,7 +14,7 @@ namespace GestionFinanzas.Services.Implementations
 
         public async Task<IEnumerable<Categoria>> GetAll(int idUsuario)
         {
-            return await _context.Categorias.Where(c => c.IdUsuario == idUsuario || c.IdUsuario == null).ToListAsync();
+            return await _context.Categorias.Where(c => c.IdUsuario == idUsuario || c.IdUsuario == null && c.EstadoActivoCategoria == true).ToListAsync();
         }
 
         public async Task<Categoria> Insert(Categoria categoria)
