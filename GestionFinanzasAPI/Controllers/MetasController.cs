@@ -64,7 +64,7 @@ namespace GestionFinanzasAPI.Controllers
             return CreatedAtAction(nameof(GetById), new { idUsuario = nuevaMeta.IdUsuario }, respuestaDto);
         }
 
-        [HttpPut]
+        [HttpPut("{idMeta}")]
         public async Task<IActionResult> Update(int idMeta, [FromBody] MetaUpdateDTO metaDto)
         {
             if (!ModelState.IsValid)
