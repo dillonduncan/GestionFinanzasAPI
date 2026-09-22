@@ -17,13 +17,13 @@ namespace GestionFinanzas.Services.Implementations
             return await _context.Usuarios
                 .Include(u => u.Transacciones)
                 .Include(u => u.Meta)
-                .Where(u => u.EstadoActivoUsuario == true)
+                .Where(u => u.EstadoActivoUsuario)
                 .ToListAsync();
         }
 
         public async Task<Usuario> GetById(int id)
         {
-            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.IdUsuario == id && u.EstadoActivoUsuario == true);
+            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.IdUsuario == id && u.EstadoActivoUsuario);
             if (usuario == null) return null;
 
             await _context.Entry(usuario).Collection(u => u.Transacciones).LoadAsync();
@@ -34,7 +34,7 @@ namespace GestionFinanzas.Services.Implementations
 
         public async Task<Usuario> GetByNI(string numIdentificacion)
         {
-            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.NumeroIdentificacion == numIdentificacion && u.EstadoActivoUsuario == true);
+            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.NumeroIdentificacion == numIdentificacion && u.EstadoActivoUsuario);
             if (usuario == null) return null;
 
             await _context.Entry(usuario).Collection(u => u.Transacciones).LoadAsync();

@@ -17,6 +17,14 @@ namespace GestionFinanzas.Services.Implementations
             return await _context.Categorias.Where(c => c.IdUsuario == idUsuario || c.IdUsuario == null && c.EstadoActivoCategoria == true).ToListAsync();
         }
 
+        public async Task<Categoria> GetById(int idUsuario, int idCategoria)
+        {
+            return await _context.Categorias.FirstOrDefaultAsync(c =>
+            c.IdCategoria == idCategoria &&
+            (c.IdUsuario == idUsuario || c.IdUsuario == null)
+            && c.EstadoActivoCategoria);
+        }
+
         public async Task<Categoria> Insert(Categoria categoria)
         {
             await _context.Categorias.AddAsync(categoria);

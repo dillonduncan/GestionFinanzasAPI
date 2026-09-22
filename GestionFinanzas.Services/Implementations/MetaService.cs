@@ -14,12 +14,12 @@ namespace GestionFinanzas.Services.Implementations
 
         public async Task<IEnumerable<Meta>> GetAll(int idUsuario)
         {
-            return await _context.Metas.Where(m => m.IdUsuario == idUsuario && m.EstadoActivoMeta == true).ToListAsync();
+            return await _context.Metas.Where(m => m.IdUsuario == idUsuario && m.EstadoActivoMeta).ToListAsync();
         }
 
         public async Task<Meta> GetById(int idMeta, int idUsuario)
         {
-            return await _context.Metas.FirstOrDefaultAsync(m => m.IdMeta == idMeta && m.IdUsuario == idUsuario && m.EstadoActivoMeta == true);
+            return await _context.Metas.FirstOrDefaultAsync(m => m.IdMeta == idMeta && m.IdUsuario == idUsuario && m.EstadoActivoMeta);
         }
 
         public async Task<Meta> Insert(Meta meta)
