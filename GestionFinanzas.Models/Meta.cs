@@ -8,11 +8,11 @@ public partial class Meta
 
     public string? NombreMeta { get; set; }
 
-    public decimal? MontoObjetivo { get; set; }
+    public decimal MontoObjetivo { get; set; }
 
-    public decimal? SaldoActual { get; set; }
+    public decimal SaldoActual { get; set; }
 
-    public DateOnly? FechaLimite { get; set; }
+    public DateTime? FechaLimite { get; set; }
 
     public bool EstadoActivoMeta { get; set; }
 
