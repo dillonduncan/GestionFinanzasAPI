@@ -4,8 +4,6 @@ namespace GestionFinanzasAPI.DTOs.Requests
 {
     public class CategoriaCreateDTO
     {
-        [Required]
-        public int IdUsuario { get; set; }
 
         [Required(ErrorMessage = "EL nombre de la categoria es obligatorio.")]
         public string NombreCategoria { get; set; }
