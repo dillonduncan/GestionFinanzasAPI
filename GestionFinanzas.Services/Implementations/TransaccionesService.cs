@@ -22,14 +22,14 @@ namespace GestionFinanzas.Services.Implementations
         public async Task<IEnumerable<Transaccione>> GetForCategoria(int idUsuario, int idCategoria)
         {
             return await _context.Transacciones
-                .Where(t => t.IdUsuario == idUsuario && t.IdCategoria == idCategoria && t.EstadoActivoTransaccion)
+                .Where(t => t.IdUsuario == idUsuario && t.IdCategoria == idCategoria)
                 .ToListAsync();
         }
 
         public async Task<Transaccione> GetById(int id, int idUsuario)
         {
             return await _context.Transacciones
-                .FirstOrDefaultAsync(t => t.IdTransaccion == id && t.IdUsuario == idUsuario && t.EstadoActivoTransaccion);
+                .FirstOrDefaultAsync(t => t.IdTransaccion == id && t.IdUsuario == idUsuario);
         }
 
         public async Task<Transaccione> Insert(Transaccione transaccion)
