@@ -70,7 +70,7 @@ namespace GestionFinanzasAPI.Controllers
             return CreatedAtAction(nameof(GetById), new { idUsuario = respuestaDto.IdUsuario }, respuestaDto);
         }
 
-        [HttpPut]
+        [HttpPut("{idUsuario}")]
         public async Task<IActionResult> Update(int idUsuario, [FromBody] UsuarioUpdateDTO usuarioDTO)
         {
             if (!ModelState.IsValid)

@@ -51,7 +51,6 @@ namespace GestionFinanzasAPI.Controllers
 
             var nuevaTransaccion = new Transaccione
             {
-                IdTransaccion = transaccionDto.IdTransaccion,
                 IdUsuario = transaccionDto.IdUsuario,
                 Monto = transaccionDto.Monto,
                 TipoTransaccion = transaccionDto.TipoTransaccion,
@@ -68,7 +67,7 @@ namespace GestionFinanzasAPI.Controllers
                 respuestaDto);
         }
 
-        [HttpPut("{idTransaccion")]
+        [HttpPut("{idTransaccion}")]
         public async Task<IActionResult> Update(int idTransaccion, [FromBody] TransaccionUpdateDTO transaccionDto)
         {
             if (!ModelState.IsValid)

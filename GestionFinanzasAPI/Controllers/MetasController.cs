@@ -51,7 +51,6 @@ namespace GestionFinanzasAPI.Controllers
 
             var nuevaMeta = new Meta
             {
-                IdUsuario = metaDto.IdUsuario,
                 NombreMeta = metaDto.NombreMeta,
                 MontoObjetivo = metaDto.MontoObjetivo,
                 SaldoActual = metaDto.SaldoActual,
@@ -73,7 +72,7 @@ namespace GestionFinanzasAPI.Controllers
             }
             var metaActualizar = new Meta
             {
-                IdMeta = metaDto.IdMeta,
+                IdMeta = idMeta,
                 NombreMeta = metaDto.NombreMeta,
                 MontoObjetivo = metaDto.MontoObjetivo,
                 SaldoActual = metaDto.SaldoActual,
