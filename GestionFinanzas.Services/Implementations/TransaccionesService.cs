@@ -1,4 +1,7 @@
-﻿using GestionFinanzas.Data;
+﻿using AutoMapper;
+using GestionFinanzas.Data;
+using GestionFinanzas.Services.DTOs.Requests;
+using GestionFinanzas.Services.DTOs.Responses;
 using GestionFinanzas.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,46 +10,60 @@ namespace GestionFinanzas.Services.Implementations
     public class TransaccionesService : ITransaccionesService
     {
         private readonly GestionFinanzasContext _context;
-        public TransaccionesService(GestionFinanzasContext context)
+        private readonly IMapper _mapper;
+        public TransaccionesService(GestionFinanzasContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Transaccion>> GetAll(int idUsuario)
+        public async Task<IEnumerable<TransaccionResponseDTO>> GetAll(int idUsuario)
         {
-            return await _context.Transacciones
+            var transacciones = await _context.Transacciones
                 .AsNoTracking()
+                .Include(t => t.IdCategoriaNavigation)
                 .Where(t => t.IdUsuario == idUsuario && t.EstadoActivoTransaccion)
                 .ToListAsync();
+            return _mapper.Map<IEnumerable<TransaccionResponseDTO>>(transacciones);
         }
 
-        public async Task<IEnumerable<Transaccion>> GetForCategoria(int idUsuario, int idCategoria)
+        public async Task<IEnumerable<TransaccionResponseDTO>> GetForCategoria(int idUsuario, int idCategoria)
         {
-            return await _context.Transacciones
+            var transacciones = await _context.Transacciones
                 .AsNoTracking()
+                .Include(t => t.IdCategoriaNavigation)
                 .Where(t => t.IdUsuario == idUsuario && t.IdCategoria == idCategoria)
                 .ToListAsync();
+            return _mapper.Map<IEnumerable<TransaccionResponseDTO>>(transacciones);
         }
 
-        public async Task<Transaccion> GetById(int id, int idUsuario)
+        public async Task<TransaccionResponseDTO> GetById(int id, int idUsuario)
         {
-            return await _context.Transacciones
+            var transaccion = await _context.Transacciones
                 .AsNoTracking()
+                .Include(t => t.IdCategoriaNavigation)
                 .FirstOrDefaultAsync(t => t.IdTransaccion == id && t.IdUsuario == idUsuario);
+            return _mapper.Map<TransaccionResponseDTO>(transaccion);
         }
 
-        public async Task<Transaccion> Insert(Transaccion transaccion)
+        public async Task<TransaccionResponseDTO> Insert(TransaccionCreateDTO transaccion)
         {
-            await _context.Transacciones.AddAsync(transaccion);
+            var transaccionMap = _mapper.Map<Transaccion>(transaccion);
+
+            await _context.Transacciones.AddAsync(transaccionMap);
             await _context.SaveChangesAsync();
-            return transaccion;
+            return _mapper.Map<TransaccionResponseDTO>(transaccionMap);
         }
 
-        public async Task<Transaccion> Update(Transaccion transaccione)
+        public async Task<TransaccionResponseDTO> Update(int idTransaccion, TransaccionUpdateDTO transaccion)
         {
-            _context.Transacciones.Update(transaccione);
+            var transaccionExiste = await _context.Transacciones
+                .FirstOrDefaultAsync(t => t.IdTransaccion == idTransaccion);
+
+            if (transaccionExiste == null) return null;
+            _mapper.Map(transaccion, transaccionExiste);
             await _context.SaveChangesAsync();
-            return transaccione;
+            return _mapper.Map<TransaccionResponseDTO>(transaccionExiste);
         }
 
         public async Task<bool> Delete(int idTransaccion, int idUsuario)
