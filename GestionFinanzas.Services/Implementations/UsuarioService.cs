@@ -65,6 +65,7 @@ namespace GestionFinanzas.Services.Implementations
         public async Task<UsuarioResponseDTO> Update(int idUsuario, UsuarioUpdateDTO usuario)
         {
             var usuarioExiste = await _context.Usuarios.FindAsync(idUsuario);
+
             if (usuarioExiste == null) return null;
 
             if (!string.IsNullOrEmpty(usuario.ContraseñaUsuario))
