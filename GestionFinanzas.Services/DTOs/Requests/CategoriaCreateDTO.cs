@@ -1,0 +1,17 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace sGestionFinanzas.Service.DTOs.Requests
+{
+    public class CategoriaCreateDTO
+    {
+
+        [Required]
+        public int IdUsuario { get; set; }
+
+        [Required(ErrorMessage = "EL nombre de la categoria es obligatorio.")]
+        public string NombreCategoria { get; set; }
+
+        [Required(ErrorMessage = "EL tipo de categoria es obligatorio (Ingreso/Egreso).")]
+        public string TipoCategoria { get; set; }
+    }
+}
