@@ -22,7 +22,7 @@ namespace GestionFinanzas.Services.Implementations
             var transacciones = await _context.Transacciones
                 .AsNoTracking()
                 .Include(t => t.IdCategoriaNavigation)
-                .Where(t => t.IdUsuario == idUsuario && t.EstadoActivoTransaccion)
+                .Where(t => t.IdUsuario == idUsuario)
                 .ToListAsync();
             return _mapper.Map<IEnumerable<TransaccionResponseDTO>>(transacciones);
         }
@@ -58,7 +58,7 @@ namespace GestionFinanzas.Services.Implementations
         public async Task<TransaccionResponseDTO> Update(int idTransaccion, TransaccionUpdateDTO transaccion)
         {
             var transaccionExiste = await _context.Transacciones
-                .FirstOrDefaultAsync(t => t.IdTransaccion == idTransaccion);
+                .FirstOrDefaultAsync(t => t.IdTransaccion == idTransaccion && t.IdUsuario == transaccion.IdUsuario);
 
             if (transaccionExiste == null) return null;
             _mapper.Map(transaccion, transaccionExiste);
