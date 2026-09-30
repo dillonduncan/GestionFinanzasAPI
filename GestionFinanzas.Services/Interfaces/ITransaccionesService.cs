@@ -1,14 +1,15 @@
-﻿using GestionFinanzas.Data;
+﻿using GestionFinanzas.Services.DTOs.Requests;
+using GestionFinanzas.Services.DTOs.Responses;
 
 namespace GestionFinanzas.Services.Interfaces
 {
     public interface ITransaccionesService
     {
-        Task<IEnumerable<Transaccion>> GetAll(int idUsuario);
-        Task<IEnumerable<Transaccion>> GetForCategoria(int idUsuario, int idCategoria);
-        Task<Transaccion> GetById(int id, int idUsuario);
-        Task<Transaccion> Insert(Transaccion transaccion);
-        Task<Transaccion> Update(Transaccion transaccione);
+        Task<IEnumerable<TransaccionResponseDTO>> GetAll(int idUsuario);
+        Task<IEnumerable<TransaccionResponseDTO>> GetForCategoria(int idCategoria, int idUsuario);
+        Task<TransaccionResponseDTO> GetById(int id, int idUsuario);
+        Task<TransaccionResponseDTO> Insert(TransaccionCreateDTO transaccion);
+        Task<TransaccionResponseDTO> Update(int idTransaccion, TransaccionUpdateDTO transaccion);
         Task<bool> Delete(int idTransaccion, int idUsuario);
     }
 }
