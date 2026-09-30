@@ -1,4 +1,4 @@
-﻿namespace GestionFinanzas.Service.DTOs.Responses
+﻿namespace GestionFinanzas.Services.DTOs.Responses
 {
     public class MetaResponseDTO
     {

@@ -12,6 +12,8 @@ builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IMetaService, MetaService>();
 builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 builder.Services.AddScoped<ITransaccionesService, TransaccionesService>();
+
+builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(GestionFinanzas.Services.Mappings.MapingProfile)));
 // Add services to the container.
 builder.Services.AddControllers()
     .AddJsonOptions(opc => opc.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);

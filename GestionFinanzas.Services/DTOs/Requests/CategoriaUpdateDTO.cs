@@ -1,4 +1,4 @@
-﻿namespace GestionFinanzas.Service.DTOs.Requests
+﻿namespace GestionFinanzas.Services.DTOs.Requests
 {
     public class CategoriaUpdateDTO
     {

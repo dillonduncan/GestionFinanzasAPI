@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace sGestionFinanzas.Service.DTOs.Requests
+namespace GestionFinanzas.Services.DTOs.Requests
 {
     public class CategoriaCreateDTO
     {
