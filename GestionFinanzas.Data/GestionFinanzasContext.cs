@@ -31,6 +31,7 @@ public partial class GestionFinanzasContext : DbContext
         {
             entity.HasKey(e => e.IdCategoria);
 
+            entity.Property(e => e.EstadoActivoCategoria).HasDefaultValue(true);
             entity.Property(e => e.IdCategoria).HasColumnName("id_categoria");
             entity.Property(e => e.EstadoActivoCategoria).HasColumnName("estado_activo_categoria");
             entity.Property(e => e.IdUsuario).HasColumnName("id_usuario");
@@ -49,6 +50,7 @@ public partial class GestionFinanzasContext : DbContext
         {
             entity.HasKey(e => e.IdMeta);
 
+            entity.Property(e => e.EstadoActivoMeta).HasDefaultValue(true);
             entity.Property(e => e.IdMeta).HasColumnName("id_meta");
             entity.Property(e => e.EstadoActivoMeta).HasColumnName("estado_activo_meta");
             entity.Property(e => e.FechaLimite).HasColumnName("fecha_limite");
@@ -75,6 +77,7 @@ public partial class GestionFinanzasContext : DbContext
         {
             entity.HasKey(e => e.IdTransaccion);
 
+            entity.Property(e => e.EstadoActivoTransaccion).HasDefaultValue(true);
             entity.Property(e => e.IdTransaccion).HasColumnName("id_transaccion");
             entity.Property(e => e.DescripcionTransaccion)
                 .HasMaxLength(150)
@@ -110,6 +113,7 @@ public partial class GestionFinanzasContext : DbContext
         {
             entity.HasKey(e => e.IdUsuario);
 
+            entity.Property(e => e.EstadoActivoUsuario).HasDefaultValue(true);
             entity.Property(e => e.IdUsuario).HasColumnName("id_usuario");
             entity.Property(e => e.ApellidoUsuario)
                 .HasMaxLength(40)
