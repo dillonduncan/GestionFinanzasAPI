@@ -14,12 +14,12 @@ namespace GestionFinanzas.Services.Implementations
 
         public async Task<IEnumerable<Categoria>> GetAll(int idUsuario)
         {
-            return await _context.Categorias.Where(c => c.IdUsuario == idUsuario || c.IdUsuario == null).ToListAsync();
+            return await _context.Categorias.AsNoTracking().Where(c => c.IdUsuario == idUsuario || c.IdUsuario == null).ToListAsync();
         }
 
         public async Task<Categoria> GetById(int idUsuario, int idCategoria)
         {
-            return await _context.Categorias.FirstOrDefaultAsync(c =>
+            return await _context.Categorias.AsNoTracking().FirstOrDefaultAsync(c =>
             c.IdCategoria == idCategoria &&
             (c.IdUsuario == idUsuario || c.IdUsuario == null));
         }
@@ -33,7 +33,6 @@ namespace GestionFinanzas.Services.Implementations
 
         public async Task<Categoria> Update(Categoria categoria)
         {
-            _context.Categorias.Update(categoria);
             await _context.SaveChangesAsync();
             return categoria;
         }

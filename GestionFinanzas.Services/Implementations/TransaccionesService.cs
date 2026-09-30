@@ -12,34 +12,37 @@ namespace GestionFinanzas.Services.Implementations
             _context = context;
         }
 
-        public async Task<IEnumerable<Transaccione>> GetAll(int idUsuario)
+        public async Task<IEnumerable<Transaccion>> GetAll(int idUsuario)
         {
             return await _context.Transacciones
+                .AsNoTracking()
                 .Where(t => t.IdUsuario == idUsuario && t.EstadoActivoTransaccion)
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Transaccione>> GetForCategoria(int idUsuario, int idCategoria)
+        public async Task<IEnumerable<Transaccion>> GetForCategoria(int idUsuario, int idCategoria)
         {
             return await _context.Transacciones
+                .AsNoTracking()
                 .Where(t => t.IdUsuario == idUsuario && t.IdCategoria == idCategoria)
                 .ToListAsync();
         }
 
-        public async Task<Transaccione> GetById(int id, int idUsuario)
+        public async Task<Transaccion> GetById(int id, int idUsuario)
         {
             return await _context.Transacciones
+                .AsNoTracking()
                 .FirstOrDefaultAsync(t => t.IdTransaccion == id && t.IdUsuario == idUsuario);
         }
 
-        public async Task<Transaccione> Insert(Transaccione transaccion)
+        public async Task<Transaccion> Insert(Transaccion transaccion)
         {
             await _context.Transacciones.AddAsync(transaccion);
             await _context.SaveChangesAsync();
             return transaccion;
         }
 
-        public async Task<Transaccione> Update(Transaccione transaccione)
+        public async Task<Transaccion> Update(Transaccion transaccione)
         {
             _context.Transacciones.Update(transaccione);
             await _context.SaveChangesAsync();

@@ -15,6 +15,7 @@ namespace GestionFinanzas.Services.Implementations
         public async Task<IEnumerable<Usuario>> GetAll()
         {
             return await _context.Usuarios
+                .AsNoTracking()
                 .Include(u => u.Transacciones)
                 .Include(u => u.Meta)
                 .ToListAsync();
@@ -22,7 +23,7 @@ namespace GestionFinanzas.Services.Implementations
 
         public async Task<Usuario> GetById(int id)
         {
-            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.IdUsuario == id);
+            var usuario = await _context.Usuarios.FindAsync(id);
             if (usuario == null) return null;
 
             await _context.Entry(usuario).Collection(u => u.Transacciones).LoadAsync();
@@ -33,7 +34,7 @@ namespace GestionFinanzas.Services.Implementations
 
         public async Task<Usuario> GetByNI(string numIdentificacion)
         {
-            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.NumeroIdentificacion == numIdentificacion);
+            var usuario = await _context.Usuarios.AsNoTracking().FirstOrDefaultAsync(u => u.NumeroIdentificacion == numIdentificacion);
             if (usuario == null) return null;
 
             await _context.Entry(usuario).Collection(u => u.Transacciones).LoadAsync();
@@ -45,6 +46,7 @@ namespace GestionFinanzas.Services.Implementations
         public async Task<Usuario> Insert(Usuario usuario)
         {
             usuario.ContraseñaUsuario = BCrypt.Net.BCrypt.HashPassword(usuario.ContraseñaUsuario);
+            usuario.EstadoActivoUsuario = true;
             await _context.Usuarios.AddAsync(usuario);
             await _context.SaveChangesAsync();
             return usuario;
@@ -65,7 +67,6 @@ namespace GestionFinanzas.Services.Implementations
             usuarioExiste.ApellidoUsuario = usuario.ApellidoUsuario;
             usuarioExiste.CorreoUsuario = usuario.CorreoUsuario;
 
-            _context.Usuarios.Update(usuarioExiste);
             await _context.SaveChangesAsync();
             return usuarioExiste;
         }

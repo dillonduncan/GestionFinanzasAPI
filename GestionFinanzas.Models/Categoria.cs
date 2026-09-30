@@ -12,5 +12,5 @@ public partial class Categoria
 
     public virtual Usuario? IdUsuarioNavigation { get; set; }
 
-    public virtual ICollection<Transaccione> Transacciones { get; set; } = new List<Transaccione>();
+    public virtual ICollection<Transaccion> Transacciones { get; set; } = new List<Transaccion>();
 }

@@ -49,7 +49,7 @@ namespace GestionFinanzasAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var nuevaTransaccion = new Transaccione
+            var nuevaTransaccion = new Transaccion
             {
                 IdUsuario = transaccionDto.IdUsuario,
                 Monto = transaccionDto.Monto,
@@ -75,7 +75,7 @@ namespace GestionFinanzasAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var transaccionActualizar = new Transaccione
+            var transaccionActualizar = new Transaccion
             {
                 IdTransaccion = idTransaccion,
                 IdCategoria = transaccionDto.IdCategoria,
@@ -105,7 +105,7 @@ namespace GestionFinanzasAPI.Controllers
             return NoContent();
         }
 
-        private TransaccionResponseDTO MapearTransaccionResponseDTO(Transaccione transaccion)
+        private TransaccionResponseDTO MapearTransaccionResponseDTO(Transaccion transaccion)
         {
             return new TransaccionResponseDTO
             {

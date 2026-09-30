@@ -20,5 +20,5 @@ public partial class Usuario
 
     public virtual ICollection<Meta> Meta { get; set; } = new List<Meta>();
 
-    public virtual ICollection<Transaccione> Transacciones { get; set; } = new List<Transaccione>();
+    public virtual ICollection<Transaccion> Transacciones { get; set; } = new List<Transaccion>();
 }

@@ -1,6 +1,6 @@
 ﻿namespace GestionFinanzas.Data;
 
-public partial class Transaccione
+public partial class Transaccion
 {
     public int IdTransaccion { get; set; }
 

@@ -17,7 +17,7 @@ public partial class GestionFinanzasContext : DbContext
 
     public virtual DbSet<Meta> Metas { get; set; }
 
-    public virtual DbSet<Transaccione> Transacciones { get; set; }
+    public virtual DbSet<Transaccion> Transacciones { get; set; }
 
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
@@ -71,7 +71,7 @@ public partial class GestionFinanzasContext : DbContext
         });
         modelBuilder.Entity<Meta>().HasQueryFilter(m => m.EstadoActivoMeta == true);
 
-        modelBuilder.Entity<Transaccione>(entity =>
+        modelBuilder.Entity<Transaccion>(entity =>
         {
             entity.HasKey(e => e.IdTransaccion);
 
@@ -104,7 +104,7 @@ public partial class GestionFinanzasContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Transacciones_Usuarios");
         });
-        modelBuilder.Entity<Transaccione>().HasQueryFilter(t => t.EstadoActivoTransaccion == true);
+        modelBuilder.Entity<Transaccion>().HasQueryFilter(t => t.EstadoActivoTransaccion == true);
 
         modelBuilder.Entity<Usuario>(entity =>
         {
