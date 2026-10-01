@@ -1,7 +1,7 @@
 ﻿using GestionFinanzas.Data;
+using GestionFinanzas.Services.DTOs.Requests;
+using GestionFinanzas.Services.DTOs.Responses;
 using GestionFinanzas.Services.Interfaces;
-using GestionFinanzasAPI.DTOs.Requests;
-using GestionFinanzasAPI.DTOs.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionFinanzasAPI.Controllers

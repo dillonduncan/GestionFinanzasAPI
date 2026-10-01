@@ -1,7 +1,6 @@
 ﻿using GestionFinanzas.Data;
+using GestionFinanzas.Services.DTOs.Requests;
 using GestionFinanzas.Services.Interfaces;
-using GestionFinanzasAPI.DTOs.Requests;
-using GestionFinanzasAPI.DTOs.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionFinanzasAPI.Controllers
@@ -20,12 +19,7 @@ namespace GestionFinanzasAPI.Controllers
         public async Task<IActionResult> GetAll(int idUsuario)
         {
             var categorias = await _categoriaService.GetAll(idUsuario);
-            if (categorias == null)
-            {
-                return NotFound(new { mensaje = $"No se encontro ningun usuario con ID: {idUsuario}" });
-            }
-            var categoriasDto = categorias.Select(c => MapearACategoriaResponseDTO(c)).ToList();
-            return Ok(categoriasDto);
+            return Ok(categorias);
         }
 
         [HttpGet("{idCategoria}/usuario/{idUsuario}")]
@@ -37,7 +31,7 @@ namespace GestionFinanzasAPI.Controllers
                 return NotFound(new { mensaje = "Categoría no encontrada o no tienes permisos para verla." });
             }
 
-            return Ok(MapearACategoriaResponseDTO(categoria));
+            return Ok(categoria);
         }
 
 
@@ -49,15 +43,7 @@ namespace GestionFinanzasAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var nuevaCategoria = new Categoria
-            {
-                IdUsuario = categoriaDto.IdUsuario,
-                NombreCategoria = categoriaDto.NombreCategoria,
-                EstadoActivoCategoria = true
-            };
-
-            var categoriaCreada = await _categoriaService.Insert(nuevaCategoria);
-            var respuestaDto = MapearACategoriaResponseDTO(categoriaCreada);
+            var categoriaCreada = await _categoriaService.Insert(categoriaDto);
 
             return CreatedAtAction(nameof(GetById), new { idUsuario = nuevaCategoria.IdUsuario }, respuestaDto);
         }
@@ -88,14 +74,6 @@ namespace GestionFinanzasAPI.Controllers
                 return NotFound(new { mensaje = "La categoria no existe o no tienes permisos para eliminarla" });
             }
             return NoContent();
-        }
-        private CategoriaResponseDTO MapearACategoriaResponseDTO(Categoria categoria)
-        {
-            return new CategoriaResponseDTO
-            {
-                IdCategoria = categoria.IdCategoria,
-                NombreCategoria = categoria.NombreCategoria
-            };
         }
     }
 }
