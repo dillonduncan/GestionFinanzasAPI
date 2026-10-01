@@ -1,6 +1,4 @@
-﻿using GestionFinanzas.Data;
-using GestionFinanzas.Services.DTOs.Requests;
-using GestionFinanzas.Services.DTOs.Responses;
+﻿using GestionFinanzas.Services.DTOs.Requests;
 using GestionFinanzas.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,8 +18,7 @@ namespace GestionFinanzasAPI.Controllers
         public async Task<IActionResult> GetAll()
         {
             var usuarios = await _usuarioService.GetAll();
-            var usuariosDTO = usuarios.Select(u => MapearUsuarioResponseDTO(u)).ToList();
-            return Ok(usuariosDTO);
+            return Ok(usuarios);
         }
 
         [HttpGet("{idUsuario}")]
@@ -34,7 +31,7 @@ namespace GestionFinanzasAPI.Controllers
                 return NotFound(new { mensaje = $"No se encontro ninggun usuario con ID: {idUsuario}" });
             }
 
-            return Ok(MapearUsuarioResponseDTO(usuario));
+            return Ok(usuario);
         }
 
         [HttpGet("identificacion/{numIdentificacion}")]
@@ -45,7 +42,7 @@ namespace GestionFinanzasAPI.Controllers
             {
                 return NotFound(new { mensaje = $"No se encontro un usuario con este numero de identificacion: {numIdentificacion}" });
             }
-            return Ok(MapearUsuarioResponseDTO(usuario));
+            return Ok(usuario);
         }
 
         [HttpPost]
@@ -55,19 +52,9 @@ namespace GestionFinanzasAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var nuevoUsuario = new Usuario
-            {
-                NumeroIdentificacion = usuarioDTO.NumeroIdentificacion,
-                NombreUsuario = usuarioDTO.NombreUsuario,
-                ApellidoUsuario = usuarioDTO.ApellidoUsuario,
-                CorreoUsuario = usuarioDTO.CorreoUsuario,
-                ContraseñaUsuario = usuarioDTO.ContraseñaUsuario,
-                EstadoActivoUsuario = true
-            };
-            var usuarioCreado = await _usuarioService.Insert(nuevoUsuario);
-            var respuestaDto = MapearUsuarioResponseDTO(usuarioCreado);
+            var usuarioCreado = await _usuarioService.Insert(usuarioDTO);
 
-            return CreatedAtAction(nameof(GetById), new { idUsuario = respuestaDto.IdUsuario }, respuestaDto);
+            return CreatedAtAction(nameof(GetById), new { idUsuario = usuarioCreado.IdUsuario }, usuarioCreado);
         }
 
         [HttpPut("{idUsuario}")]
@@ -78,22 +65,12 @@ namespace GestionFinanzasAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var usuarioActualizar = new Usuario
-            {
-                IdUsuario = idUsuario,
-                NumeroIdentificacion = usuarioDTO.NumeroIdentificacion,
-                NombreUsuario = usuarioDTO.NombreUsuario,
-                ApellidoUsuario = usuarioDTO.ApellidoUsuario,
-                CorreoUsuario = usuarioDTO.CorreoUsuario,
-                ContraseñaUsuario = usuarioDTO.ContraseñaUsuario
-            };
-
-            var usuarioActualizado = await _usuarioService.Update(usuarioActualizar);
+            var usuarioActualizado = await _usuarioService.Update(idUsuario, usuarioDTO);
             if (usuarioActualizado == null)
             {
                 return NotFound(new { mensaje = $"El usuario con ID {idUsuario} no existe." });
             }
-            return Ok(MapearUsuarioResponseDTO(usuarioActualizado));
+            return Ok(usuarioActualizado);
         }
 
         [HttpDelete("{idUsuario}")]
@@ -107,18 +84,6 @@ namespace GestionFinanzasAPI.Controllers
             }
 
             return NoContent();
-        }
-
-        private UsuarioResponseDTO MapearUsuarioResponseDTO(Usuario usuario)
-        {
-            return new UsuarioResponseDTO
-            {
-                IdUsuario = usuario.IdUsuario,
-                NumeroIdentificacion = usuario.NumeroIdentificacion,
-                NombreUsuario = usuario.NombreUsuario,
-                ApellidoUsuario = usuario.ApellidoUsuario,
-                CorreoUsuario = usuario.CorreoUsuario
-            };
         }
     }
 }
