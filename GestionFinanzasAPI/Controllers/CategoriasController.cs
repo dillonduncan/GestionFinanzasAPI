@@ -1,5 +1,4 @@
-﻿using GestionFinanzas.Data;
-using GestionFinanzas.Services.DTOs.Requests;
+﻿using GestionFinanzas.Services.DTOs.Requests;
 using GestionFinanzas.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,7 +44,7 @@ namespace GestionFinanzasAPI.Controllers
 
             var categoriaCreada = await _categoriaService.Insert(categoriaDto);
 
-            return CreatedAtAction(nameof(GetById), new { idUsuario = nuevaCategoria.IdUsuario }, respuestaDto);
+            return CreatedAtAction(nameof(GetById), new { idCategoria = categoriaCreada.IdCategoria }, categoriaCreada);
         }
 
         [HttpPut("{idCategoria}")]
@@ -53,15 +52,10 @@ namespace GestionFinanzasAPI.Controllers
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
 
-            var categoriaActualizar = new Categoria
-            {
-                IdCategoria = idCategoria,
-                NombreCategoria = categoriaDto.NombreCategoria
-            };
+            var categoriaActualizada = await _categoriaService.Update(idCategoria, categoriaDto);
 
-            var catActualizada = await _categoriaService.Update(categoriaActualizar);
-            if (catActualizada == null) return NotFound(new { mensaje = "La categoría no existe." });
-            return Ok(MapearACategoriaResponseDTO(catActualizada));
+            if (categoriaActualizada == null) return NotFound(new { mensaje = "La categoría no existe." });
+            return Ok(categoriaActualizada);
         }
 
         [HttpDelete("{idCategoria}/usuario/{idUsuario}")]
