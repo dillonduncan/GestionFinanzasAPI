@@ -1,7 +1,5 @@
-﻿using GestionFinanzas.Data;
+﻿using GestionFinanzas.Services.DTOs.Requests;
 using GestionFinanzas.Services.Interfaces;
-using GestionFinanzasAPI.DTOs.Requests;
-using GestionFinanzasAPI.DTOs.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionFinanzasAPI.Controllers
@@ -24,8 +22,19 @@ namespace GestionFinanzasAPI.Controllers
             {
                 return NotFound(new { mensaje = $"No se encontraron transaciones registradas para el usuario con ID: {idUsuario}" });
             }
+            return Ok(transacciones);
+        }
 
-            var transaccionDto = transacciones.Select(t => MapearTransaccionResponseDTO(t)).ToList();
+        [HttpGet("categoria/{idCategoria}/usuario/{idUsuario}")]
+        public async Task<IActionResult> GetForCategoria(int idCategoria, int idUsuario)
+        {
+            var transacciones = await _transaccionesService.GetForCategoria(idUsuario, idCategoria);
+
+            if (transacciones == null || !transacciones.Any())
+            {
+                return NotFound(new { mensaje = $"No se encontraron transacciones en esta categoría para el usuario con ID: {idUsuario}" });
+            }
+
             return Ok(transacciones);
         }
 
@@ -38,7 +47,7 @@ namespace GestionFinanzasAPI.Controllers
                 return NotFound(new { mensaje = $"No se encontro ninguna transaccion con ID: {idTransaccion} para el usuario con ID: {idUsuario}" });
             }
 
-            return Ok(MapearTransaccionResponseDTO(transaccion));
+            return Ok(transaccion);
         }
 
         [HttpPost]
@@ -49,22 +58,11 @@ namespace GestionFinanzasAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var nuevaTransaccion = new Transaccion
-            {
-                IdUsuario = transaccionDto.IdUsuario,
-                Monto = transaccionDto.Monto,
-                TipoTransaccion = transaccionDto.TipoTransaccion,
-                FechaTransaccion = transaccionDto.FechaTransaccion == default(DateTime) ? DateTime.Now : transaccionDto.FechaTransaccion,
-                DescripcionTransaccion = transaccionDto.DescripcionTransaccion,
-                EstadoActivoTransaccion = true,
-                IdCategoria = transaccionDto.IdCategoria
-            };
+            var transaccionCreada = await _transaccionesService.Insert(transaccionDto);
 
-            var transaccionCreada = await _transaccionesService.Insert(nuevaTransaccion);
-            var respuestaDto = MapearTransaccionResponseDTO(transaccionCreada);
             return CreatedAtAction(nameof(GetById),
-                new { idTransaccion = transaccionCreada.IdTransaccion, idUsuario = nuevaTransaccion.IdUsuario },
-                respuestaDto);
+                new { idTransaccion = transaccionCreada.IdTransaccion },
+                transaccionCreada);
         }
 
         [HttpPut("{idTransaccion}")]
@@ -75,23 +73,13 @@ namespace GestionFinanzasAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var transaccionActualizar = new Transaccion
-            {
-                IdTransaccion = idTransaccion,
-                IdCategoria = transaccionDto.IdCategoria,
-                Monto = transaccionDto.MontoTransaccion,
-                TipoTransaccion = transaccionDto.TipoTransaccion,
-                FechaTransaccion = transaccionDto.FechaTransaccion,
-                DescripcionTransaccion = transaccionDto.DescripcionTransaccion
-            };
-
-            var transaccionActualizada = await _transaccionesService.Update(transaccionActualizar);
+            var transaccionActualizada = await _transaccionesService.Update(idTransaccion, transaccionDto);
 
             if (transaccionActualizada == null)
             {
                 return NotFound(new { mensaje = "La transaccion no existe." });
             }
-            return Ok(MapearTransaccionResponseDTO(transaccionActualizada));
+            return Ok(transaccionActualizada);
         }
 
         [HttpDelete("{idTransaccion}/usuario/{idUsuario}")]
@@ -103,20 +91,6 @@ namespace GestionFinanzasAPI.Controllers
                 return NotFound(new { mensaje = $"La transaccion no existe o no tienes permiso para eliminarla" });
             }
             return NoContent();
-        }
-
-        private TransaccionResponseDTO MapearTransaccionResponseDTO(Transaccion transaccion)
-        {
-            return new TransaccionResponseDTO
-            {
-                IdTransaccion = transaccion.IdTransaccion,
-                Monto = transaccion.Monto,
-                TipoTransaccion = transaccion.TipoTransaccion,
-                FechaTransaccion = transaccion.FechaTransaccion,
-                DescripcionTransaccion = transaccion.DescripcionTransaccion,
-                IdCategoria = transaccion.IdCategoria,
-                NombreCategoria = transaccion.IdCategoriaNavigation?.NombreCategoria ?? "Sin Categoria"
-            };
         }
     }
 }
