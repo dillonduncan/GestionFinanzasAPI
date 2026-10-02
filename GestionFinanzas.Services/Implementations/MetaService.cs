@@ -35,9 +35,10 @@ namespace GestionFinanzas.Services.Implementations
             return _mapper.Map<MetaResponseDTO>(meta);
         }
 
-        public async Task<MetaResponseDTO> Insert(MetaCreateDTO meta)
+        public async Task<MetaResponseDTO> Insert(int idUsuario, MetaCreateDTO meta)
         {
             var metaMap = _mapper.Map<Meta>(meta);
+            metaMap.IdUsuario = idUsuario;
 
             await _context.Metas.AddAsync(metaMap);
             await _context.SaveChangesAsync();
@@ -45,10 +46,10 @@ namespace GestionFinanzas.Services.Implementations
             return _mapper.Map<MetaResponseDTO>(metaMap);
         }
 
-        public async Task<MetaResponseDTO> Update(int idMeta, MetaUpdateDTO meta)
+        public async Task<MetaResponseDTO> Update(int idMeta, int idUsuario, MetaUpdateDTO meta)
         {
             var metaExiste = await _context.Metas
-                .FirstOrDefaultAsync(m => m.IdMeta == idMeta && m.IdUsuario == meta.IdUsuario);
+                .FirstOrDefaultAsync(m => m.IdMeta == idMeta && m.IdUsuario == idUsuario);
 
             if (metaExiste == null) return null;
             _mapper.Map(meta, metaExiste);

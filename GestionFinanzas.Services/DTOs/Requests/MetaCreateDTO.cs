@@ -4,8 +4,6 @@ namespace GestionFinanzas.Services.DTOs.Requests
 {
     public class MetaCreateDTO
     {
-        [Required]
-        public int IdUsuario { get; set; }
 
         [Required(ErrorMessage = "La descripción de la meta es obligatoria")]
         public string NombreMeta { get; set; }
