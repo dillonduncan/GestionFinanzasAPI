@@ -46,19 +46,20 @@ namespace GestionFinanzas.Services.Implementations
             return _mapper.Map<TransaccionResponseDTO>(transaccion);
         }
 
-        public async Task<TransaccionResponseDTO> Insert(TransaccionCreateDTO transaccion)
+        public async Task<TransaccionResponseDTO> Insert(int idUsuario, TransaccionCreateDTO transaccion)
         {
             var transaccionMap = _mapper.Map<Transaccion>(transaccion);
+            transaccionMap.IdUsuario = idUsuario;
 
             await _context.Transacciones.AddAsync(transaccionMap);
             await _context.SaveChangesAsync();
             return _mapper.Map<TransaccionResponseDTO>(transaccionMap);
         }
 
-        public async Task<TransaccionResponseDTO> Update(int idTransaccion, TransaccionUpdateDTO transaccion)
+        public async Task<TransaccionResponseDTO> Update(int idTransaccion, int idUsuario, TransaccionUpdateDTO transaccion)
         {
             var transaccionExiste = await _context.Transacciones
-                .FirstOrDefaultAsync(t => t.IdTransaccion == idTransaccion && t.IdUsuario == transaccion.IdUsuario);
+                .FirstOrDefaultAsync(t => t.IdTransaccion == idTransaccion && t.IdUsuario == idUsuario);
 
             if (transaccionExiste == null) return null;
             _mapper.Map(transaccion, transaccionExiste);

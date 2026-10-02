@@ -8,8 +8,8 @@ namespace GestionFinanzas.Services.Interfaces
         Task<IEnumerable<TransaccionResponseDTO>> GetAll(int idUsuario);
         Task<IEnumerable<TransaccionResponseDTO>> GetForCategoria(int idCategoria, int idUsuario);
         Task<TransaccionResponseDTO> GetById(int id, int idUsuario);
-        Task<TransaccionResponseDTO> Insert(TransaccionCreateDTO transaccion);
-        Task<TransaccionResponseDTO> Update(int idTransaccion, TransaccionUpdateDTO transaccion);
+        Task<TransaccionResponseDTO> Insert(int idUsuario, TransaccionCreateDTO transaccion);
+        Task<TransaccionResponseDTO> Update(int idTransaccion, int idUsuario, TransaccionUpdateDTO transaccion);
         Task<bool> Delete(int idTransaccion, int idUsuario);
     }
 }

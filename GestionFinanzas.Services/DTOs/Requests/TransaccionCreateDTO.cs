@@ -4,8 +4,6 @@ namespace GestionFinanzas.Services.DTOs.Requests
 {
     public class TransaccionCreateDTO
     {
-        [Required]
-        public int IdUsuario { get; set; }
 
         [Required(ErrorMessage = "El monto de la transacción es obligatorio")]
         public decimal Monto { get; set; }
