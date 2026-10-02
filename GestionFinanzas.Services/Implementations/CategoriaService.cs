@@ -34,9 +34,10 @@ namespace GestionFinanzas.Services.Implementations
             return _mapper.Map<CategoriaResponseDTO>(categoria);
         }
 
-        public async Task<CategoriaResponseDTO> Insert(CategoriaCreateDTO categoria)
+        public async Task<CategoriaResponseDTO> Insert(int idUsuario, CategoriaCreateDTO categoria)
         {
             var categoriaMap = _mapper.Map<Categoria>(categoria);
+            categoriaMap.IdUsuario = idUsuario;
 
             await _context.Categorias.AddAsync(categoriaMap);
             await _context.SaveChangesAsync();
@@ -44,9 +45,9 @@ namespace GestionFinanzas.Services.Implementations
             return _mapper.Map<CategoriaResponseDTO>(categoriaMap);
         }
 
-        public async Task<CategoriaResponseDTO> Update(int idCategoria, CategoriaUpdateDTO categoria)
+        public async Task<CategoriaResponseDTO> Update(int idCategoria, int idUsuario, CategoriaUpdateDTO categoria)
         {
-            var categoriaExiste = await _context.Categorias.FirstOrDefaultAsync(c => c.IdCategoria == idCategoria && c.IdUsuario == categoria.IdUsuario);
+            var categoriaExiste = await _context.Categorias.FirstOrDefaultAsync(c => c.IdCategoria == idCategoria && c.IdUsuario == idUsuario);
 
             if (categoriaExiste == null) return null;
 

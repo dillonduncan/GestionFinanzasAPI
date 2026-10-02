@@ -7,8 +7,8 @@ namespace GestionFinanzas.Services.Interfaces
     {
         Task<IEnumerable<CategoriaResponseDTO>> GetAll(int idUsuario);
         Task<CategoriaResponseDTO> GetById(int idCategoria, int idUsuario);
-        Task<CategoriaResponseDTO> Insert(CategoriaCreateDTO categoria);
-        Task<CategoriaResponseDTO> Update(int idCategoria, CategoriaUpdateDTO categoria);
+        Task<CategoriaResponseDTO> Insert(int idUsuario, CategoriaCreateDTO categoria);
+        Task<CategoriaResponseDTO> Update(int idCategoria, int idUsuario, CategoriaUpdateDTO categoria);
         Task<bool> Delete(int idUsuario, int idCategoria);
     }
 }
