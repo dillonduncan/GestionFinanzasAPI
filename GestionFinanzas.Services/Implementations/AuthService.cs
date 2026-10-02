@@ -1,6 +1,7 @@
 ﻿using GestionFinanzas.Data;
 using GestionFinanzas.Services.DTOs.Requests;
 using GestionFinanzas.Services.DTOs.Responses;
+using GestionFinanzas.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -10,7 +11,7 @@ using System.Text;
 
 namespace GestionFinanzas.Services.Implementations
 {
-    public class AuthService
+    public class AuthService : IAuthService
     {
         private readonly GestionFinanzasContext _context;
         private readonly IConfiguration _configuration;
@@ -20,6 +21,7 @@ namespace GestionFinanzas.Services.Implementations
             _context = context;
             _configuration = configuration;
         }
+
 
         public async Task<AuthResponseDTO> Login(LoginDTO loginDto)
         {
@@ -54,7 +56,6 @@ namespace GestionFinanzas.Services.Implementations
                 Token = token
             };
         }
-
         private string GenerarJwtToken(string idUuario, string correoUsuario)
         {
             var claims = new[]
