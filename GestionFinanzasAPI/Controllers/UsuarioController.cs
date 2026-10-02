@@ -1,9 +1,12 @@
 ﻿using GestionFinanzas.Services.DTOs.Requests;
 using GestionFinanzas.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace GestionFinanzasAPI.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class UsuarioController : ControllerBase
@@ -14,6 +17,13 @@ namespace GestionFinanzasAPI.Controllers
             _usuarioService = usuarioService;
         }
 
+        private int ObtenerIdUsuarioToken()
+        {
+            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(idClaim)) throw new UnauthorizedAccessException("El token no trae el ID del usuario.");
+            return int.Parse(idClaim);
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -21,9 +31,10 @@ namespace GestionFinanzasAPI.Controllers
             return Ok(usuarios);
         }
 
-        [HttpGet("{idUsuario}")]
-        public async Task<IActionResult> GetById(int idUsuario)
+        [HttpGet("mi-perfil")]
+        public async Task<IActionResult> GetMiPerfil()
         {
+            var idUsuario = ObtenerIdUsuarioToken();
             var usuario = await _usuarioService.GetById(idUsuario);
 
             if (usuario == null)
@@ -45,6 +56,7 @@ namespace GestionFinanzasAPI.Controllers
             return Ok(usuario);
         }
 
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] UsuarioCreateDTO usuarioDTO)
         {
@@ -54,16 +66,18 @@ namespace GestionFinanzasAPI.Controllers
             }
             var usuarioCreado = await _usuarioService.Insert(usuarioDTO);
 
-            return CreatedAtAction(nameof(GetById), new { idUsuario = usuarioCreado.IdUsuario }, usuarioCreado);
+            return CreatedAtAction(nameof(GetMiPerfil), new { }, usuarioCreado);
         }
 
-        [HttpPut("{idUsuario}")]
-        public async Task<IActionResult> Update(int idUsuario, [FromBody] UsuarioUpdateDTO usuarioDTO)
+        [HttpPut("mi-perfil")]
+        public async Task<IActionResult> Update([FromBody] UsuarioUpdateDTO usuarioDTO)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+            int idUsuario = ObtenerIdUsuarioToken();
+
 
             var usuarioActualizado = await _usuarioService.Update(idUsuario, usuarioDTO);
             if (usuarioActualizado == null)
@@ -73,9 +87,10 @@ namespace GestionFinanzasAPI.Controllers
             return Ok(usuarioActualizado);
         }
 
-        [HttpDelete("{idUsuario}")]
-        public async Task<IActionResult> Delete(int idUsuario)
+        [HttpDelete("mi-perfil")]
+        public async Task<IActionResult> Delete()
         {
+            var idUsuario = ObtenerIdUsuarioToken();
             var exito = await _usuarioService.Delete(idUsuario);
 
             if (!exito)

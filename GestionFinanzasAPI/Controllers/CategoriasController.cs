@@ -1,9 +1,12 @@
 ﻿using GestionFinanzas.Services.DTOs.Requests;
 using GestionFinanzas.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace GestionFinanzasAPI.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class CategoriasController : ControllerBase
@@ -14,16 +17,27 @@ namespace GestionFinanzasAPI.Controllers
             _categoriaService = categoriaService;
         }
 
-        [HttpGet("usuario/{idUsuario}")]
-        public async Task<IActionResult> GetAll(int idUsuario)
+        private int ObtenerIdUsuarioToken()
         {
+            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(idClaim)) throw new UnauthorizedAccessException("El token no trae el ID del usuario.");
+
+            return int.Parse(idClaim);
+        }
+
+        [HttpGet("mis-categorias")]
+        public async Task<IActionResult> GetAll()
+        {
+            int idUsuario = ObtenerIdUsuarioToken();
             var categorias = await _categoriaService.GetAll(idUsuario);
             return Ok(categorias);
         }
 
-        [HttpGet("{idCategoria}/usuario/{idUsuario}")]
-        public async Task<IActionResult> GetById(int idCategoria, int idUsuario)
+        [HttpGet("{idCategoria}")]
+        public async Task<IActionResult> GetById(int idCategoria)
         {
+            var idUsuario = ObtenerIdUsuarioToken();
             var categoria = await _categoriaService.GetById(idUsuario, idCategoria);
             if (categoria == null)
             {
@@ -42,7 +56,9 @@ namespace GestionFinanzasAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var categoriaCreada = await _categoriaService.Insert(categoriaDto);
+            int idUsuario = ObtenerIdUsuarioToken();
+
+            var categoriaCreada = await _categoriaService.Insert(idUsuario, categoriaDto);
 
             return CreatedAtAction(nameof(GetById), new { idCategoria = categoriaCreada.IdCategoria }, categoriaCreada);
         }
@@ -52,15 +68,20 @@ namespace GestionFinanzasAPI.Controllers
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
 
-            var categoriaActualizada = await _categoriaService.Update(idCategoria, categoriaDto);
+            int idUsuario = ObtenerIdUsuarioToken();
+
+
+            var categoriaActualizada = await _categoriaService.Update(idCategoria, idUsuario, categoriaDto);
 
             if (categoriaActualizada == null) return NotFound(new { mensaje = "La categoría no existe." });
             return Ok(categoriaActualizada);
         }
 
-        [HttpDelete("{idCategoria}/usuario/{idUsuario}")]
-        public async Task<IActionResult> Delete(int idCategoria, int idUsuario)
+        [HttpDelete("{idCategoria}")]
+        public async Task<IActionResult> Delete(int idCategoria)
         {
+            int idUsuario = ObtenerIdUsuarioToken();
+
             var catEliminada = await _categoriaService.Delete(idUsuario, idCategoria);
 
             if (!catEliminada)

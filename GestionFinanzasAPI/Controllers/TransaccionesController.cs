@@ -1,9 +1,12 @@
 ﻿using GestionFinanzas.Services.DTOs.Requests;
 using GestionFinanzas.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace GestionFinanzasAPI.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class TransaccionesController : ControllerBase
@@ -13,9 +16,18 @@ namespace GestionFinanzasAPI.Controllers
         {
             _transaccionesService = transaccionesService;
         }
-        [HttpGet("usuario/{idUsuario}")]
-        public async Task<IActionResult> GetAll(int idUsuario)
+        private int ObtenerIdUsuarioToken()
         {
+            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(idClaim)) throw new UnauthorizedAccessException("El token no trae el ID del usuario.");
+            return int.Parse(idClaim);
+        }
+
+        [HttpGet("mis-transacciones")]
+        public async Task<IActionResult> GetAll()
+        {
+            var idUsuario = ObtenerIdUsuarioToken();
+
             var transacciones = await _transaccionesService.GetAll(idUsuario);
 
             if (transacciones == null || !transacciones.Any())
@@ -25,9 +37,11 @@ namespace GestionFinanzasAPI.Controllers
             return Ok(transacciones);
         }
 
-        [HttpGet("categoria/{idCategoria}/usuario/{idUsuario}")]
-        public async Task<IActionResult> GetForCategoria(int idCategoria, int idUsuario)
+        [HttpGet("categoria/{idCategoria}")]
+        public async Task<IActionResult> GetForCategoria(int idCategoria)
         {
+            var idUsuario = ObtenerIdUsuarioToken();
+
             var transacciones = await _transaccionesService.GetForCategoria(idUsuario, idCategoria);
 
             if (transacciones == null || !transacciones.Any())
@@ -38,9 +52,11 @@ namespace GestionFinanzasAPI.Controllers
             return Ok(transacciones);
         }
 
-        [HttpGet("{idTransaccion}/usuario/{idUsuario}")]
-        public async Task<IActionResult> GetById(int idTransaccion, int idUsuario)
+        [HttpGet("{idTransaccion}")]
+        public async Task<IActionResult> GetById(int idTransaccion)
         {
+            var idUsuario = ObtenerIdUsuarioToken();
+
             var transaccion = await _transaccionesService.GetById(idTransaccion, idUsuario);
             if (transaccion == null)
             {
@@ -57,8 +73,9 @@ namespace GestionFinanzasAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
+            var idUsuario = ObtenerIdUsuarioToken();
 
-            var transaccionCreada = await _transaccionesService.Insert(transaccionDto);
+            var transaccionCreada = await _transaccionesService.Insert(idUsuario, transaccionDto);
 
             return CreatedAtAction(nameof(GetById),
                 new { idTransaccion = transaccionCreada.IdTransaccion },
@@ -73,7 +90,9 @@ namespace GestionFinanzasAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var transaccionActualizada = await _transaccionesService.Update(idTransaccion, transaccionDto);
+            var idUsuario = ObtenerIdUsuarioToken();
+
+            var transaccionActualizada = await _transaccionesService.Update(idTransaccion, idUsuario, transaccionDto);
 
             if (transaccionActualizada == null)
             {
@@ -82,9 +101,11 @@ namespace GestionFinanzasAPI.Controllers
             return Ok(transaccionActualizada);
         }
 
-        [HttpDelete("{idTransaccion}/usuario/{idUsuario}")]
-        public async Task<IActionResult> Delete(int idTransaccion, int idUsuario)
+        [HttpDelete("{idTransaccion}")]
+        public async Task<IActionResult> Delete(int idTransaccion)
         {
+            var idUsuario = ObtenerIdUsuarioToken();
+
             var transaccionEliminada = await _transaccionesService.Delete(idTransaccion, idUsuario);
             if (!transaccionEliminada)
             {

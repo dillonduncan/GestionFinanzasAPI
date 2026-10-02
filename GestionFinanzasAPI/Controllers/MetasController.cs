@@ -1,9 +1,12 @@
 ﻿using GestionFinanzas.Services.DTOs.Requests;
 using GestionFinanzas.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace GestionFinanzasAPI.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class MetasController : ControllerBase
@@ -14,17 +17,26 @@ namespace GestionFinanzasAPI.Controllers
             _metaService = metaService;
         }
 
-        [HttpGet("usuario/{idUsuario}")]
-        public async Task<IActionResult> GetAll(int idUsuario)
+        private int ObtenerIdUsuarioToken()
         {
+            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(idClaim)) throw new UnauthorizedAccessException("El token no trae el ID del usuario.");
+            return int.Parse(idClaim);
+        }
+
+        [HttpGet("mis-metas")]
+        public async Task<IActionResult> GetAll()
+        {
+            var idUsuario = ObtenerIdUsuarioToken();
             var metas = await _metaService.GetAll(idUsuario);
 
             return Ok(metas);
         }
 
-        [HttpGet("{idMeta}/usuario/{idUsuario}")]
-        public async Task<IActionResult> GetById(int idMeta, int idUsuario)
+        [HttpGet("{idMeta}")]
+        public async Task<IActionResult> GetById(int idMeta)
         {
+            var idUsuario = ObtenerIdUsuarioToken();
             var meta = await _metaService.GetById(idMeta, idUsuario);
 
             if (meta == null)
@@ -41,8 +53,9 @@ namespace GestionFinanzasAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
+            var idUsuario = ObtenerIdUsuarioToken();
 
-            var metaCreada = await _metaService.Insert(metaDto);
+            var metaCreada = await _metaService.Insert(idUsuario, metaDto);
             return CreatedAtAction(nameof(GetById), new { idMeta = metaCreada.IdMeta }, metaCreada);
         }
 
@@ -53,8 +66,10 @@ namespace GestionFinanzasAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
+            var idUsuario = ObtenerIdUsuarioToken();
 
-            var metaActualizada = await _metaService.Update(idMeta, metaDto);
+
+            var metaActualizada = await _metaService.Update(idMeta, idUsuario, metaDto);
 
             if (metaActualizada == null)
             {
@@ -63,9 +78,11 @@ namespace GestionFinanzasAPI.Controllers
             return Ok(metaActualizada);
         }
 
-        [HttpDelete("{idMeta}/usuario/{idUsuario}")]
-        public async Task<IActionResult> Delete(int idMeta, int idUsuario)
+        [HttpDelete("{idMeta}")]
+        public async Task<IActionResult> Delete(int idMeta)
         {
+            var idUsuario = ObtenerIdUsuarioToken();
+
             var metaEliminado = await _metaService.Delete(idMeta, idUsuario);
             if (!metaEliminado)
             {
