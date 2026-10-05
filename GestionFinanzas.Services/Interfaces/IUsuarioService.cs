@@ -7,6 +7,7 @@ namespace GestionFinanzas.Services.Interfaces
     {
         Task<IEnumerable<UsuarioResponseDTO>> GetAll();
         Task<UsuarioResponseDTO> GetById(int id);
+        Task<bool> ExisteCorreo(string correoUsuario);
         Task<UsuarioResponseDTO> GetByNI(string numIdentificacion);
         Task<UsuarioResponseDTO> Insert(UsuarioCreateDTO usuario);
         Task<UsuarioResponseDTO> Update(int idUsuario, UsuarioUpdateDTO usuario);

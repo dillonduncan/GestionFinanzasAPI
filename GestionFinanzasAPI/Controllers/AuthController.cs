@@ -10,9 +10,11 @@ namespace GestionFinanzasAPI.Controllers
     public class AuthController : Controller
     {
         private readonly IAuthService _authService;
-        public AuthController(IAuthService authService)
+        private readonly IUsuarioService _usuarioService;
+        public AuthController(IAuthService authService, IUsuarioService usuarioService)
         {
             _authService = authService;
+            _usuarioService = usuarioService;
         }
 
         [AllowAnonymous]
@@ -32,6 +34,22 @@ namespace GestionFinanzasAPI.Controllers
             }
 
             return Ok(respuesta);
+        }
+
+        [HttpPost("registro")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Registro([FromBody] UsuarioCreateDTO dto)
+        {
+            if (await _usuarioService.ExisteCorreo(dto.CorreoUsuario)) return BadRequest(new { mensaje = "El correo ya esta registrado." });
+
+            var usuarioNuevo = await _usuarioService.Insert(dto);
+
+            if (usuarioNuevo == null)
+            {
+                return BadRequest(new { mensaje = "Ocurrio un error al intentar registrar el usuario." });
+            }
+
+            return Ok(new { exito = true, mensaje = "Registro exitoso. Ya puedes iniciar sesion." });
         }
     }
 }

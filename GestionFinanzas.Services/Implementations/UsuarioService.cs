@@ -51,6 +51,17 @@ namespace GestionFinanzas.Services.Implementations
             return _mapper.Map<UsuarioResponseDTO>(usuario);
         }
 
+        public async Task<bool> ExisteCorreo(string correoUsuario)
+        {
+            if (string.IsNullOrWhiteSpace(correoUsuario)) return false;
+
+            var correoLimpio = correoUsuario.Trim().ToLower();
+
+            return await _context.Usuarios
+                .AsNoTracking()
+                .AnyAsync(u => u.CorreoUsuario == correoLimpio);
+        }
+
         public async Task<UsuarioResponseDTO> Insert(UsuarioCreateDTO usuario)
         {
             usuario.ContraseñaUsuario = BCrypt.Net.BCrypt.HashPassword(usuario.ContraseñaUsuario);

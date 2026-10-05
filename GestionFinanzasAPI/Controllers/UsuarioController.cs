@@ -25,6 +25,7 @@ namespace GestionFinanzasAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll()
         {
             var usuarios = await _usuarioService.GetAll();
@@ -56,6 +57,7 @@ namespace GestionFinanzasAPI.Controllers
         }
 
         [HttpGet("identificacion/{numIdentificacion}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetByNI(string numIdentificacion)
         {
             var usuario = await _usuarioService.GetByNI(numIdentificacion);
@@ -66,7 +68,7 @@ namespace GestionFinanzasAPI.Controllers
             return Ok(usuario);
         }
 
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] UsuarioCreateDTO usuarioDTO)
         {
