@@ -25,7 +25,10 @@ namespace GestionFinanzas.Services.Implementations
 
         public async Task<AuthResponseDTO> Login(LoginDTO loginDto)
         {
-            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.CorreoUsuario == loginDto.CorreoUsuario);
+            var usuario = await _context.Usuarios
+                .Include(u => u.UsuarioRoles)
+                .ThenInclude(ur => ur.Rol)
+                .FirstOrDefaultAsync(u => u.CorreoUsuario == loginDto.CorreoUsuario);
 
             if (usuario == null)
             {
@@ -47,7 +50,8 @@ namespace GestionFinanzas.Services.Implementations
                 };
             }
 
-            string token = GenerarJwtToken(usuario.IdUsuario.ToString(), usuario.CorreoUsuario);
+            var roles = usuario.UsuarioRoles.Select(ur => ur.Rol.NombreRol).ToList();
+            string token = GenerarJwtToken(usuario.IdUsuario.ToString(), usuario.CorreoUsuario, roles);
 
             return new AuthResponseDTO
             {
@@ -56,13 +60,18 @@ namespace GestionFinanzas.Services.Implementations
                 Token = token
             };
         }
-        private string GenerarJwtToken(string idUuario, string correoUsuario)
+        private string GenerarJwtToken(string idUuario, string correoUsuario, List<string> roles)
         {
-            var claims = new[]
+            var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, idUuario),
                 new Claim(ClaimTypes.Email, correoUsuario)
             };
+
+            foreach (var rol in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, rol));
+            }
 
             //Traer la clave secreta desde el appsettings.json y convertirla a bytes
             var secretKey = _configuration["Jwt:Key"];
