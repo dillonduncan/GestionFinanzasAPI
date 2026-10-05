@@ -8,7 +8,7 @@ public partial class Categoria
 
     public string? NombreCategoria { get; set; }
 
-    public bool EstadoActivoCategoria { get; set; }
+    public bool EstadoActivoCategoria { get; set; } = true;
 
     public virtual Usuario? IdUsuarioNavigation { get; set; }
 

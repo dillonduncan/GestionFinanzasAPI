@@ -14,7 +14,7 @@ public partial class Meta
 
     public DateTime? FechaLimite { get; set; }
 
-    public bool EstadoActivoMeta { get; set; }
+    public bool EstadoActivoMeta { get; set; } = true;
 
     public virtual Usuario IdUsuarioNavigation { get; set; } = null!;
 }

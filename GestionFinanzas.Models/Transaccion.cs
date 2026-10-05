@@ -16,7 +16,7 @@ public partial class Transaccion
 
     public string? DescripcionTransaccion { get; set; }
 
-    public bool EstadoActivoTransaccion { get; set; }
+    public bool EstadoActivoTransaccion { get; set; } = true;
 
     public virtual Categoria IdCategoriaNavigation { get; set; } = null!;
 

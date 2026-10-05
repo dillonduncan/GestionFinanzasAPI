@@ -4,6 +4,10 @@ namespace GestionFinanzas.Data;
 
 public partial class Usuario
 {
+    public Usuario()
+    {
+        UsuarioRoles = new List<UsuarioRol>();
+    }
     public int IdUsuario { get; set; }
 
     public string? NumeroIdentificacion { get; set; }
@@ -16,7 +20,7 @@ public partial class Usuario
 
     public string ContraseñaUsuario { get; set; } = null!;
 
-    public bool EstadoActivoUsuario { get; set; }
+    public bool EstadoActivoUsuario { get; set; } = true;
     public ICollection<UsuarioRol> UsuarioRoles { get; set; }
 
     public virtual ICollection<Categoria> Categoria { get; set; } = new List<Categoria>();
