@@ -31,6 +31,16 @@ namespace GestionFinanzasAPI.Controllers
             return Ok(usuarios);
         }
 
+        [HttpGet("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var usuario = await _usuarioService.GetById(id);
+
+            if (usuario == null) return NotFound(new { mensaje = $"No se encontro ningun usuario con ID: {id}." });
+            return Ok(usuario);
+        }
+
         [HttpGet("mi-perfil")]
         public async Task<IActionResult> GetMiPerfil()
         {
