@@ -57,6 +57,10 @@ namespace GestionFinanzas.Services.Implementations
 
             var usuarioMap = _mapper.Map<Usuario>(usuario);
 
+            usuarioMap.UsuarioRoles.Add(new Models.UsuarioRol
+            {
+                IdRol = 2
+            });
             await _context.Usuarios.AddAsync(usuarioMap);
             await _context.SaveChangesAsync();
             return _mapper.Map<UsuarioResponseDTO>(usuarioMap);

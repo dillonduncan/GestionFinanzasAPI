@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using GestionFinanzas.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace GestionFinanzas.Data;
 
@@ -20,6 +21,8 @@ public partial class GestionFinanzasContext : DbContext
     public virtual DbSet<Transaccion> Transacciones { get; set; }
 
     public virtual DbSet<Usuario> Usuarios { get; set; }
+    public virtual DbSet<Rol> Roles { get; set; }
+    public virtual DbSet<UsuarioRol> UsuariosRoles { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:DefaultConnection");
@@ -138,6 +141,27 @@ public partial class GestionFinanzasContext : DbContext
                 .HasColumnName("numero_identificacion");
         });
         modelBuilder.Entity<Usuario>().HasQueryFilter(u => u.EstadoActivoUsuario == true);
+
+        modelBuilder.Entity<Rol>(entity =>
+        {
+            entity.HasKey(r => r.IdRol);
+            entity.Property(r => r.NombreRol)
+                .HasMaxLength(20);
+        });
+        modelBuilder.Entity<UsuarioRol>(entity =>
+        {
+            entity.HasKey(ur => new { ur.IdRol, ur.IdUsuario });
+            entity.HasOne(ur => ur.Usuario)
+                .WithMany(u => u.UsuarioRoles)
+                .HasForeignKey(ur => ur.IdUsuario);
+            entity.HasOne(ur => ur.Rol)
+                .WithMany(r => r.UsuarioRoles)
+                .HasForeignKey(ur => ur.IdRol);
+        });
+        modelBuilder.Entity<Rol>().HasData(
+            new Rol { IdRol = 1, NombreRol = "Admin" },
+            new Rol { IdRol = 2, NombreRol = "Usuario" }
+        );
 
         OnModelCreatingPartial(modelBuilder);
     }

@@ -1,4 +1,6 @@
-﻿namespace GestionFinanzas.Data;
+﻿using GestionFinanzas.Models;
+
+namespace GestionFinanzas.Data;
 
 public partial class Usuario
 {
@@ -15,6 +17,7 @@ public partial class Usuario
     public string ContraseñaUsuario { get; set; } = null!;
 
     public bool EstadoActivoUsuario { get; set; }
+    public ICollection<UsuarioRol> UsuarioRoles { get; set; }
 
     public virtual ICollection<Categoria> Categoria { get; set; } = new List<Categoria>();
 
