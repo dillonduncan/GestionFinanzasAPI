@@ -81,6 +81,8 @@ namespace GestionFinanzasAPI.Controllers
             return CreatedAtAction(nameof(GetMiPerfil), new { }, usuarioCreado);
         }
 
+
+
         [HttpPut("mi-perfil")]
         public async Task<IActionResult> Update([FromBody] UsuarioUpdateDTO usuarioDTO)
         {
@@ -99,7 +101,19 @@ namespace GestionFinanzasAPI.Controllers
             return Ok(usuarioActualizado);
         }
 
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateAdmin(int id, [FromBody] UsuarioUpdateDTO dto)
+        {
+            var usuarioActualizado = await _usuarioService.Update(id, dto);
+
+            if (usuarioActualizado == null) return NotFound(new { mensaje = $"No se encontro el usuario con ID {id}." });
+
+            return Ok(new { exito = true, mensaje = "Datos actualizados correctamente." });
+        }
+
         [HttpDelete("mi-perfil")]
+        [Authorize]
         public async Task<IActionResult> Delete()
         {
             var idUsuario = ObtenerIdUsuarioToken();
