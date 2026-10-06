@@ -21,7 +21,6 @@
     <Folder Include="Validators\Meta\" />
     <Folder Include="Validators\Categoria\" />
     <Folder Include="Validators\Auth\" />
-    <Folder Include="Validators\Transaccion\" />
   </ItemGroup>
 
 </Project>

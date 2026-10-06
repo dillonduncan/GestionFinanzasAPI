@@ -23,7 +23,7 @@ namespace GestionFinanzas.Services.Validators.Usuario
 
             RuleFor(r => r.ContraseñaUsuario)
                 .MinimumLength(6).WithMessage("La contraseña debe tener minimo 6 caracteres.")
-                .When(r => !string.IsNullOrEmpty(r.ContraseñaUsuario.ToString()));
+                .When(r => !string.IsNullOrEmpty(r.ContraseñaUsuario));
         }
 
     }
