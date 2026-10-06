@@ -112,6 +112,9 @@ namespace GestionFinanzasAPI.Controllers
             return Ok(new { exito = true, mensaje = "Datos actualizados correctamente." });
         }
 
+        [HttpDelete("id")]
+        [Authorize]
+
         [HttpDelete("mi-perfil")]
         [Authorize]
         public async Task<IActionResult> Delete()

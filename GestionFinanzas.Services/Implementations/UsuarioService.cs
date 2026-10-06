@@ -95,9 +95,47 @@ namespace GestionFinanzas.Services.Implementations
 
         public async Task<bool> Delete(int idUsuario)
         {
-            var usuario = await _context.Usuarios.FindAsync(idUsuario);
+            var usuario = await _context.Usuarios
+                .Include(u => u.Transacciones)
+                .Include(u => u.Meta)
+                .Include(u => u.UsuarioRoles)
+                .Include(u => u.Categoria)
+                .FirstOrDefaultAsync(u => u.IdUsuario == idUsuario);
+
             if (usuario == null) return false;
+
             usuario.EstadoActivoUsuario = false;
+
+            if (usuario.Transacciones != null && usuario.Transacciones.Any())
+            {
+                foreach (var transaccion in usuario.Transacciones)
+                {
+                    transaccion.EstadoActivoTransaccion = false;
+                }
+            }
+
+            if (usuario.Meta != null && usuario.Meta.Any())
+            {
+                foreach (var meta in usuario.Meta)
+                {
+                    meta.EstadoActivoMeta = false;
+                }
+            }
+            if (usuario.UsuarioRoles != null && usuario.UsuarioRoles.Any())
+            {
+                foreach (var usuarioRol in usuario.UsuarioRoles)
+                {
+                    _context.UsuariosRoles.Remove(usuarioRol);
+                }
+            }
+            if (usuario.Categoria != null && usuario.Categoria.Any())
+            {
+                foreach (var categoria in usuario.Categoria)
+                {
+                    categoria.EstadoActivoCategoria = false;
+                }
+            }
+            _context.Update(usuario);
             await _context.SaveChangesAsync();
             return true;
         }
