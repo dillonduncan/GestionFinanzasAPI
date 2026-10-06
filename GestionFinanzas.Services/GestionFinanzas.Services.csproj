@@ -17,4 +17,11 @@
     <ProjectReference Include="..\GestionFinanzas.Models\GestionFinanzas.Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Validators\Meta\" />
+    <Folder Include="Validators\Categoria\" />
+    <Folder Include="Validators\Auth\" />
+    <Folder Include="Validators\Transaccion\" />
+  </ItemGroup>
+
 </Project>
