@@ -50,7 +50,7 @@ namespace GestionFinanzasAPI.Controllers
 
             if (usuario == null)
             {
-                return NotFound(new { mensaje = $"No se encontro ninggun usuario con ID: {idUsuario}" });
+                return NotFound(new { mensaje = $"No se encontro ningun usuario con ID: {idUsuario}" });
             }
 
             return Ok(usuario);
@@ -78,7 +78,7 @@ namespace GestionFinanzasAPI.Controllers
             }
             var usuarioCreado = await _usuarioService.Insert(usuarioDTO);
 
-            return CreatedAtAction(nameof(GetMiPerfil), new { }, usuarioCreado);
+            return Ok(new { exito = true, mensaje = "Usuario creado exitosamente, Admin." });
         }
 
 
@@ -112,8 +112,15 @@ namespace GestionFinanzasAPI.Controllers
             return Ok(new { exito = true, mensaje = "Datos actualizados correctamente." });
         }
 
-        [HttpDelete("id")]
-        [Authorize]
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteAdmin(int id)
+        {
+            var usuarioExiste = await _usuarioService.Delete(id);
+            if (!usuarioExiste) return NotFound(new { mensaje = $"El usuario con ID: {id} no existe o ya fue eliminado." });
+            return NoContent();
+        }
+
 
         [HttpDelete("mi-perfil")]
         [Authorize]
