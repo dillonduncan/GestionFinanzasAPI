@@ -1,4 +1,5 @@
-﻿using GestionFinanzas.Services.DTOs.Requests;
+﻿using FluentValidation;
+using GestionFinanzas.Services.DTOs.Requests;
 using GestionFinanzas.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,9 +13,13 @@ namespace GestionFinanzasAPI.Controllers
     public class MetasController : ControllerBase
     {
         private readonly IMetaService _metaService;
-        public MetasController(IMetaService metaService)
+        private readonly IValidator<MetaCreateDTO> _createValidator;
+        private readonly IValidator<MetaUpdateDTO> _updateValidator;
+        public MetasController(IMetaService metaService, IValidator<MetaCreateDTO> createValidator, IValidator<MetaUpdateDTO> updateValidator)
         {
             _metaService = metaService;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
         }
 
         private int ObtenerIdUsuarioToken()
@@ -49,10 +54,9 @@ namespace GestionFinanzasAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] MetaCreateDTO metaDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            var validationResult = await _createValidator.ValidateAsync(metaDto);
+            if (!validationResult.IsValid) return BadRequest(validationResult.ToDictionary());
+
             var idUsuario = ObtenerIdUsuarioToken();
 
             var metaCreada = await _metaService.Insert(idUsuario, metaDto);
@@ -62,10 +66,9 @@ namespace GestionFinanzasAPI.Controllers
         [HttpPut("{idMeta}")]
         public async Task<IActionResult> Update(int idMeta, [FromBody] MetaUpdateDTO metaDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            var validationResult = await _updateValidator.ValidateAsync(metaDto);
+            if (!validationResult.IsValid) return BadRequest(validationResult.ToDictionary());
+
             var idUsuario = ObtenerIdUsuarioToken();
 
 

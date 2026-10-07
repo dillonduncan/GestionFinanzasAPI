@@ -1,4 +1,5 @@
-﻿using GestionFinanzas.Services.DTOs.Requests;
+﻿using FluentValidation;
+using GestionFinanzas.Services.DTOs.Requests;
 using GestionFinanzas.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,9 +13,13 @@ namespace GestionFinanzasAPI.Controllers
     public class UsuarioController : ControllerBase
     {
         private readonly IUsuarioService _usuarioService;
-        public UsuarioController(IUsuarioService usuarioService)
+        private readonly IValidator<UsuarioCreateDTO> _createValidator;
+        private readonly IValidator<UsuarioUpdateDTO> _updateValidator;
+        public UsuarioController(IUsuarioService usuarioService, IValidator<UsuarioCreateDTO> createValidator, IValidator<UsuarioUpdateDTO> updateValidator)
         {
             _usuarioService = usuarioService;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
         }
 
         private int ObtenerIdUsuarioToken()
@@ -72,10 +77,9 @@ namespace GestionFinanzasAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] UsuarioCreateDTO usuarioDTO)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            var validationResult = await _createValidator.ValidateAsync(usuarioDTO);
+            if (!validationResult.IsValid) return BadRequest(validationResult.ToDictionary());
+
             var usuarioCreado = await _usuarioService.Insert(usuarioDTO);
 
             return Ok(new { exito = true, mensaje = "Usuario creado exitosamente, Admin." });
@@ -86,10 +90,9 @@ namespace GestionFinanzasAPI.Controllers
         [HttpPut("mi-perfil")]
         public async Task<IActionResult> Update([FromBody] UsuarioUpdateDTO usuarioDTO)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            var validationResult = await _updateValidator.ValidateAsync(usuarioDTO);
+            if (!validationResult.IsValid) return BadRequest(validationResult.ToDictionary());
+
             int idUsuario = ObtenerIdUsuarioToken();
 
 
@@ -105,6 +108,9 @@ namespace GestionFinanzasAPI.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateAdmin(int id, [FromBody] UsuarioUpdateDTO dto)
         {
+            var validationResult = await _updateValidator.ValidateAsync(dto);
+            if (!validationResult.IsValid) return BadRequest(validationResult.ToDictionary());
+
             var usuarioActualizado = await _usuarioService.Update(id, dto);
 
             if (usuarioActualizado == null) return NotFound(new { mensaje = $"No se encontro el usuario con ID {id}." });

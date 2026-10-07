@@ -1,4 +1,5 @@
-﻿using GestionFinanzas.Services.DTOs.Requests;
+﻿using FluentValidation;
+using GestionFinanzas.Services.DTOs.Requests;
 using GestionFinanzas.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,9 +13,13 @@ namespace GestionFinanzasAPI.Controllers
     public class CategoriasController : ControllerBase
     {
         private readonly ICategoriaService _categoriaService;
-        public CategoriasController(ICategoriaService categoriaService)
+        private readonly IValidator<CategoriaCreateDTO> _createValidator;
+        private readonly IValidator<CategoriaUpdateDTO> _updateValidator;
+        public CategoriasController(ICategoriaService categoriaService, IValidator<CategoriaCreateDTO> createValidator, IValidator<CategoriaUpdateDTO> updateValidator)
         {
             _categoriaService = categoriaService;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
         }
 
         private int ObtenerIdUsuarioToken()
@@ -51,10 +56,8 @@ namespace GestionFinanzasAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CategoriaCreateDTO categoriaDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            var validationResult = await _createValidator.ValidateAsync(categoriaDto);
+            if (!validationResult.IsValid) return BadRequest(validationResult.ToDictionary());
 
             int idUsuario = ObtenerIdUsuarioToken();
 
@@ -66,10 +69,10 @@ namespace GestionFinanzasAPI.Controllers
         [HttpPut("{idCategoria}")]
         public async Task<IActionResult> Update(int idCategoria, [FromBody] CategoriaUpdateDTO categoriaDto)
         {
-            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+            var validationResult = await _updateValidator.ValidateAsync(categoriaDto);
+            if (!validationResult.IsValid) return BadRequest(validationResult.ToDictionary());
 
             int idUsuario = ObtenerIdUsuarioToken();
-
 
             var categoriaActualizada = await _categoriaService.Update(idCategoria, idUsuario, categoriaDto);
 

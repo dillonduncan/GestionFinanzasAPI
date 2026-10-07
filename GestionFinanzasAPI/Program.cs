@@ -1,6 +1,8 @@
+using FluentValidation;
 using GestionFinanzas.Data;
 using GestionFinanzas.Services.Implementations;
 using GestionFinanzas.Services.Interfaces;
+using GestionFinanzas.Services.Validators.Usuario;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -16,6 +18,8 @@ builder.Services.AddScoped<IMetaService, MetaService>();
 builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 builder.Services.AddScoped<ITransaccionesService, TransaccionesService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.AddValidatorsFromAssemblyContaining<UsuarioCreateDTOValidator>();
 
 builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(GestionFinanzas.Services.Mappings.MapingProfile)));
 

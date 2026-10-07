@@ -1,4 +1,5 @@
-﻿using GestionFinanzas.Services.DTOs.Requests;
+﻿using FluentValidation;
+using GestionFinanzas.Services.DTOs.Requests;
 using GestionFinanzas.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,20 +12,23 @@ namespace GestionFinanzasAPI.Controllers
     {
         private readonly IAuthService _authService;
         private readonly IUsuarioService _usuarioService;
-        public AuthController(IAuthService authService, IUsuarioService usuarioService)
+        private readonly IValidator<LoginDTO> _loginValidator;
+        private readonly IValidator<UsuarioCreateDTO> _createValidator;
+        public AuthController(IAuthService authService, IUsuarioService usuarioService, IValidator<LoginDTO> loginValidator, IValidator<UsuarioCreateDTO> createValidator)
         {
             _authService = authService;
             _usuarioService = usuarioService;
+            _loginValidator = loginValidator;
+            _createValidator = createValidator;
         }
 
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            var validationResult = await _loginValidator.ValidateAsync(loginDto);
+
+            if (!validationResult.IsValid) return BadRequest(validationResult.ToDictionary());
 
             var respuesta = await _authService.Login(loginDto);
 
@@ -40,6 +44,9 @@ namespace GestionFinanzasAPI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Registro([FromBody] UsuarioCreateDTO dto)
         {
+            var validationResult = await _createValidator.ValidateAsync(dto);
+            if (!validationResult.IsValid) return BadRequest(validationResult.ToDictionary());
+
             if (await _usuarioService.ExisteCorreo(dto.CorreoUsuario)) return BadRequest(new { mensaje = "El correo ya esta registrado." });
 
             var usuarioNuevo = await _usuarioService.Insert(dto);

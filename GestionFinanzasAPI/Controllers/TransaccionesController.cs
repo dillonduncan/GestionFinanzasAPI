@@ -1,4 +1,5 @@
-﻿using GestionFinanzas.Services.DTOs.Requests;
+﻿using FluentValidation;
+using GestionFinanzas.Services.DTOs.Requests;
 using GestionFinanzas.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,9 +13,13 @@ namespace GestionFinanzasAPI.Controllers
     public class TransaccionesController : ControllerBase
     {
         private readonly ITransaccionesService _transaccionesService;
-        public TransaccionesController(ITransaccionesService transaccionesService)
+        private readonly IValidator<TransaccionCreateDTO> _createValidator;
+        private readonly IValidator<TransaccionUpdateDTO> _updateValidator;
+        public TransaccionesController(ITransaccionesService transaccionesService, IValidator<TransaccionCreateDTO> createValidator, IValidator<TransaccionUpdateDTO> updateValidator)
         {
             _transaccionesService = transaccionesService;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
         }
         private int ObtenerIdUsuarioToken()
         {
@@ -30,10 +35,6 @@ namespace GestionFinanzasAPI.Controllers
 
             var transacciones = await _transaccionesService.GetAll(idUsuario);
 
-            if (transacciones == null || !transacciones.Any())
-            {
-                return NotFound(new { mensaje = $"No se encontraron transaciones registradas para el usuario con ID: {idUsuario}" });
-            }
             return Ok(transacciones);
         }
 
@@ -43,11 +44,6 @@ namespace GestionFinanzasAPI.Controllers
             var idUsuario = ObtenerIdUsuarioToken();
 
             var transacciones = await _transaccionesService.GetForCategoria(idUsuario, idCategoria);
-
-            if (transacciones == null || !transacciones.Any())
-            {
-                return NotFound(new { mensaje = $"No se encontraron transacciones en esta categoría para el usuario con ID: {idUsuario}" });
-            }
 
             return Ok(transacciones);
         }
@@ -69,10 +65,9 @@ namespace GestionFinanzasAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] TransaccionCreateDTO transaccionDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            var validationResult = await _createValidator.ValidateAsync(transaccionDto);
+            if (!validationResult.IsValid) return BadRequest(validationResult.ToDictionary());
+
             var idUsuario = ObtenerIdUsuarioToken();
 
             var transaccionCreada = await _transaccionesService.Insert(idUsuario, transaccionDto);
@@ -85,10 +80,8 @@ namespace GestionFinanzasAPI.Controllers
         [HttpPut("{idTransaccion}")]
         public async Task<IActionResult> Update(int idTransaccion, [FromBody] TransaccionUpdateDTO transaccionDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            var validationResult = await _updateValidator.ValidateAsync(transaccionDto);
+            if (!validationResult.IsValid) return BadRequest(validationResult.ToDictionary());
 
             var idUsuario = ObtenerIdUsuarioToken();
 
